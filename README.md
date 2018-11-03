@@ -3,14 +3,14 @@ Application Security Web for Spell Check
 
 Need to install
 
-  flask
+    flask
 
-  python 3.7
+    python 3.7
   
-  pyspellchecker ----- libary for spellcheck
+    pyspellchecker ----- libary for spellcheck
 
 Should install
 
-  flask-WTF ------ communicate with html form
+    flask-WTF ------ communicate with html form
 
-  passlib ------ sha 256
+    passlib ------ sha 256
