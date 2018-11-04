@@ -14,3 +14,7 @@ Should install
     flask-WTF ------ communicate with html form
 
     passlib ------ sha 256
+
+	mysql-connector ------- connect to the MySQL
+	
+	MySQL Database
