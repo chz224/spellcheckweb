@@ -1,11 +1,14 @@
 from flask import Flask, render_template, flash, redirect, url_for, session, logging,request
 
+#Okay, maybe import this instead for SQL stuff
+from flaskext.mysql import MySQL
+
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from spellchecker import SpellChecker
 
 #Okay yeah I have absolutely no idea what the hell any of this is anymore
-#from MySQLdb import escape_string as thwart
+
 
 #import mysql's connector to get that functionality
 import mysql.connector
@@ -14,29 +17,48 @@ import mysql.connector
 
 
 app = Flask(__name__)
+#app.secret_key = b'aaanwaf 3/1  3g]Anaa'
+
+
+mysql = MySQL()
+
+#Configuration stuff for the app
+    #The account on the database is currently the root-like but not exactly root
+    #test account
+app.config['MYSQL_DATABASE_USER'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'pass'
+app.config['MYSQL_DATABASE_DB'] = 'users'
+app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+mysql.init_app(app)
+
+conn = mysql.connect()
+
 
 @app.route("/",methods=['GET','POST'])
 def login():
+    cursor = conn.cursor()
+
     if(request.method=='POST'):
         username = request.form['username']
         password = request.form['password']
 
-        #for now just work with the established
-        #local admin account for the SQL server
-        try:
-            mydb = mysql.connector.connect(
-                host="localhost",
-                  #This is just a test password right now for the admin account
-                  #obviously should be stronger
-                user=username,
-                passwd=password
-            )
+        #Test out connection to current database
+        cursor.execute('''SELECT user FROM userpass''')
+        rv = cursor.fetchall()
+        return str(rv)
 
-            return  redirect(url_for('spellcheck'))
 
-        #password doesn't exist, send to register
-        except:                    
-            return  redirect(url_for('register'))
+    
+        return  redirect(url_for('login'))
+##        try:
+##            cursor.execute("SELECT user FROM users.userpass WHERE (user=\"" + username "\" AND pass=\"" + password + "\");")
+##            return  redirect(url_for('spellcheck'))
+##        except:           
+##            return  redirect(url_for('/'))
+    
+
+
+        
             
     return render_template('login.html')
 
@@ -44,44 +66,41 @@ def login():
 class RegisterForm(Form):
     username = StringField('Username', [validators.length(min=4, max=20)])
     password = PasswordField('Password',[
-        validators.DataRequired(),
-        validators.EqualTo('confirm', message='Passwords must match')
+        validators.DataRequired()
+        
     ])
-    confirm = PasswordField('Repeat Password')
+    
     
 @app.route("/register", methods=['GET','POST'])
 def register():
+
+    cursor = conn.cursor()
+    
     #not very sure how to connect the user's input into the form
     form = RegisterForm(request.form)
-    if request.method=='POST' and form.validate():
+
+    
+    
+    if request.method=='POST':
+        
         username = form.username.data
-        password = sha256_crypt.encrypt(str(form.password.data))
+        password = sha256_crypt.hash(str(form.password.data))
 
-##        c, conn = connection()
-##
-##        x = c.execute("SELECT * FROM users WHERE username = (%s)",
-##                      (thwart(username)))
-##
-##        if int(x) > 0:
-##            flash("That username is already taken, choose another")
-##
-##        else:
-##            c.execute("INSERT INTO users (username, password) VALUES (%s, %s)",
-##                      (thwart(username), thwart(password)))
-##
-##            conn.commit()
-##            flash("Thanks for registering")
-##            c.close()
-##            conn.close()
-                      
+        
+        ##NEED TO CHECK PASSWORD HASH LENGTH, ADJUST PASSWORD FIELD IN DATABASE TO MATCH
+        try:
+            ##cursor.execute("INSERT INTO userpass(user, pass) VALUES (\"" + username + "\", \"" + password + "\")")
+            cursor.execute('''INSERT INTO userpass(user,pass) VALUES (%s,%s)''',(username,password))
+            conn.commit()
+            print("FINALLY WORKED, GO TO LOGIN")
+            return redirect(url_for('login'))
+        except:
+            print("OOPS, GOING TO REGISTER AGAIN")
+            return  redirect(url_for('register'))
+            
+            
 
-    #not sure how to add the username and password into a database,   please figure it out
-    #I was thinking using mysql, but not sure how to do it
-    #something like:
-    #   mysql = mysql.connect()
-    #   mysql.execute("INSERT INTO tableName(username, password) VALUES(%s,%s)",(username,passowrd))
-    #   mysql.close()
-
+    print("RENDERING REGISTER");
     return render_template('register.html', form=form)
 
 

@@ -7,8 +7,8 @@ mydb = mysql.connector.connect(
   host="localhost",
   #This is just a test password right now for the admin account
   #obviously should be stronger
-  user="root",
-  passwd="pass"
+  user="test",
+  passwd="test"
 )
 
 #create a cursor
