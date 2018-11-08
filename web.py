@@ -7,8 +7,6 @@ from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from spellchecker import SpellChecker
 
-#Okay yeah I have absolutely no idea what the hell any of this is anymore
-
 
 #import mysql's connector to get that functionality
 import mysql.connector
@@ -42,19 +40,37 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        #Test out connection to current database
-        cursor.execute('''SELECT user FROM userpass''')
-        rv = cursor.fetchall()
-        return str(rv)
 
+        #WHY THE FUCK WON'T THIS WORK HUH? I MEAN LIKE LOGIN AND
+        #SIGN UP HAPPEN TO BE TWO DIFFERENT HASHES BECAUSE IT'S USING A DIFFERENT SALT
+        #EVERY SINGLE TIME AND I HAVE NO IDEA HOW TO STORE IT WITH THE SALT
+        try:
+            ##get the hashed password corresponding to the username entered
+            cursor.execute('''SELECT pass FROM userpass WHERE user = %s''', username)
+            
+            row = cursor.fetchone()
+            ##Check each item that matches (Probably just one now but just to be safe)
 
-    
-        return  redirect(url_for('login'))
-##        try:
-##            cursor.execute("SELECT user FROM users.userpass WHERE (user=\"" + username "\" AND pass=\"" + password + "\");")
-##            return  redirect(url_for('spellcheck'))
-##        except:           
-##            return  redirect(url_for('/'))
+            
+            if ((sha256_crypt.verify(password, row[0]))):
+                print("FOUND, LOG IN")
+                cursor.close()
+                return  redirect(url_for('spellcheck'))
+                
+                
+            
+            
+            print("NOT FOUND, GO BACK TO LOGIN")
+            cursor.close()
+            return redirect(url_for('login'))
+
+            
+            
+        #In the case of some error, just redirect back to the login page for now
+        except:
+            print("ERROR, GO BACK TO LOGIN")
+            cursor.close()
+            return  redirect(url_for('login'))
     
 
 
@@ -86,21 +102,24 @@ def register():
         username = form.username.data
         password = sha256_crypt.hash(str(form.password.data))
 
+        print("NEW HASH: " + password)
         
-        ##NEED TO CHECK PASSWORD HASH LENGTH, ADJUST PASSWORD FIELD IN DATABASE TO MATCH
+        
         try:
-            ##cursor.execute("INSERT INTO userpass(user, pass) VALUES (\"" + username + "\", \"" + password + "\")")
             cursor.execute('''INSERT INTO userpass(user,pass) VALUES (%s,%s)''',(username,password))
             conn.commit()
             print("FINALLY WORKED, GO TO LOGIN")
+            cursor.close()
             return redirect(url_for('login'))
         except:
             print("OOPS, GOING TO REGISTER AGAIN")
+            cursor.close()
             return  redirect(url_for('register'))
             
             
 
     print("RENDERING REGISTER");
+    cursor.close()
     return render_template('register.html', form=form)
 
 
