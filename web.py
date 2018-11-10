@@ -1,9 +1,12 @@
 from flask import Flask, render_template, flash, redirect, url_for, session, logging,request
+from flask_wtf import FlaskForm
+from wtforms import Form, StringField, TextAreaField, PasswordField, validators
+
 
 #Okay, maybe import this instead for SQL stuff
 from flaskext.mysql import MySQL
 
-from wtforms import Form, StringField, TextAreaField, PasswordField, validators
+
 from passlib.hash import sha256_crypt
 from spellchecker import SpellChecker
 
@@ -27,6 +30,9 @@ app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'pass'
 app.config['MYSQL_DATABASE_DB'] = 'users'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+
+app.config['SECRET_KEY'] = 'BolognaBoys'
+
 mysql.init_app(app)
 
 conn = mysql.connect()
@@ -51,7 +57,12 @@ def login():
             row = cursor.fetchone()
             ##Check each item that matches (Probably just one now but just to be safe)
 
+            print("Validating " + password + " to " + row[0])
+
             
+            test = sha256_crypt.hash("ABBA")
+
+            ##If the password is verified to the stored hash, "log in"
             if ((sha256_crypt.verify(password, row[0]))):
                 print("FOUND, LOG IN")
                 cursor.close()
@@ -79,7 +90,7 @@ def login():
     return render_template('login.html')
 
 #Registration form for new user
-class RegisterForm(Form):
+class RegisterForm(FlaskForm):
     username = StringField('Username', [validators.length(min=4, max=20)])
     password = PasswordField('Password',[
         validators.DataRequired()
@@ -100,13 +111,16 @@ def register():
     if request.method=='POST':
         
         username = form.username.data
-        password = sha256_crypt.hash(str(form.password.data))
+        password = form.password.data
+        hashed = sha256_crypt.hash(password)
 
-        print("NEW HASH: " + password)
+        print ("THE PASSWORD IS: " + form.password.data)
+
+        ##print("NEW HASH FOR " + password + " IS " + hashed)
         
         
         try:
-            cursor.execute('''INSERT INTO userpass(user,pass) VALUES (%s,%s)''',(username,password))
+            cursor.execute('''INSERT INTO userpass(user,pass) VALUES (%s,%s)''',(username,hashed))
             conn.commit()
             print("FINALLY WORKED, GO TO LOGIN")
             cursor.close()

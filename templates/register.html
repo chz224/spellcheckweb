@@ -18,9 +18,12 @@
             <i class="material-icons lock">lock</i> Register
         </div>
 
-        <form method="POST">
+        <form method="POST" action="{{ url_for('register') }}">
+			{{ form.csrf_token }}
+			
+			
 
-            <div class="clearfix"></div>
+	
 			
 			
             <div class="input">
@@ -36,7 +39,9 @@
                 <div class="input-addon">
                     <i class="material-icons">vpn_key</i>
                 </div>
-                <input id="password" name = "username" placeholder="Password" type="password">
+				{{form.password.placeholder}}
+                {{form.password}}
+				
             </div>
 
 
