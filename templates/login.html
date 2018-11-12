@@ -17,7 +17,8 @@
         <div id="title">
                <i class="material-icons lock">lock</i> Login
            </div>
-            <form action ="" method="POST">
+            <form action ="{{ url_for('login') }}" method="POST">
+				{{ form.csrf_token }}
                <div class="input">
                    <div class="input-addon">
                        <i class="material-icons">face</i>

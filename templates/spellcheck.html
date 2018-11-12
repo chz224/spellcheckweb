@@ -14,7 +14,7 @@
 
 <body>
     <div id="container-spellcheck">
-        <form method="POST">
+        <form action="http://localhost:5000/spellcheck" method="POST" enctype = "multipart/form-data">
 
             <div class="input">
                 <input id="wrongText" name = "wrongText" placeholder="Enter the file to spellcheck" type="file">

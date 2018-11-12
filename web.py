@@ -1,7 +1,13 @@
+#General Notes:
+## input should be sanitized according to both Flask and mysql-connector
+## 
+
+
+
 from flask import Flask, render_template, flash, redirect, url_for, session, logging,request
 from flask_wtf import FlaskForm
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
-
+from werkzeug import secure_filename
 
 #Okay, maybe import this instead for SQL stuff
 from flaskext.mysql import MySQL
@@ -26,12 +32,13 @@ mysql = MySQL()
 #Configuration stuff for the app
     #The account on the database is currently the root-like but not exactly root
     #test account
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'pass'
+app.config['MYSQL_DATABASE_USER'] = 'test'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'test'
 app.config['MYSQL_DATABASE_DB'] = 'users'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 
 app.config['SECRET_KEY'] = 'BolognaBoys'
+
 
 mysql.init_app(app)
 
@@ -42,14 +49,14 @@ conn = mysql.connect()
 def login():
     cursor = conn.cursor()
 
+    form = LoginForm(request.form)
+
+
     if(request.method=='POST'):
-        username = request.form['username']
-        password = request.form['password']
+        username = form.username.data
+        password = form.password.data
 
 
-        #WHY THE FUCK WON'T THIS WORK HUH? I MEAN LIKE LOGIN AND
-        #SIGN UP HAPPEN TO BE TWO DIFFERENT HASHES BECAUSE IT'S USING A DIFFERENT SALT
-        #EVERY SINGLE TIME AND I HAVE NO IDEA HOW TO STORE IT WITH THE SALT
         try:
             ##get the hashed password corresponding to the username entered
             cursor.execute('''SELECT pass FROM userpass WHERE user = %s''', username)
@@ -57,10 +64,6 @@ def login():
             row = cursor.fetchone()
             ##Check each item that matches (Probably just one now but just to be safe)
 
-            print("Validating " + password + " to " + row[0])
-
-            
-            test = sha256_crypt.hash("ABBA")
 
             ##If the password is verified to the stored hash, "log in"
             if ((sha256_crypt.verify(password, row[0]))):
@@ -87,7 +90,7 @@ def login():
 
         
             
-    return render_template('login.html')
+    return render_template('login.html', form=form)
 
 #Registration form for new user
 class RegisterForm(FlaskForm):
@@ -96,7 +99,13 @@ class RegisterForm(FlaskForm):
         validators.DataRequired()
         
     ])
-    
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', [validators.length(min=4, max=20)])
+    password = PasswordField('Password',[
+        validators.DataRequired()
+        
+    ])
     
 @app.route("/register", methods=['GET','POST'])
 def register():
@@ -113,20 +122,17 @@ def register():
         username = form.username.data
         password = form.password.data
         hashed = sha256_crypt.hash(password)
-
-        print ("THE PASSWORD IS: " + form.password.data)
-
-        ##print("NEW HASH FOR " + password + " IS " + hashed)
         
         
         try:
             cursor.execute('''INSERT INTO userpass(user,pass) VALUES (%s,%s)''',(username,hashed))
             conn.commit()
-            print("FINALLY WORKED, GO TO LOGIN")
             cursor.close()
             return redirect(url_for('login'))
+
+        #If either this doesn't work
+        #Or the username already exists in the database, go back to register
         except:
-            print("OOPS, GOING TO REGISTER AGAIN")
             cursor.close()
             return  redirect(url_for('register'))
             
@@ -141,11 +147,41 @@ def register():
 def spellcheck():
     if (request.method == 'POST'):
         spell = SpellChecker()
-        misspelledTexts = request.form['wrongText']
-        result = ""
-        for word in misspelledTexts.split():
-            result = result +" "+ str(spell.candidates(word))
-        return result
+
+
+        try:
+            file = request.files['wrongText']
+        except:
+            file = None
+
+        if (file):
+            filename = secure_filename(file.filename)
+
+
+
+
+            result = " "
+
+            #Read the file, split into words, decode from bytes to string
+            words = file.read()
+            words = words.decode("utf-8")
+            words = words.split()
+            
+    
+             
+
+            mispelled = spell.unknown(words)
+            print(mispelled)
+            if (len(mispelled) > 0):
+                for w in mispelled:
+                    result = result + ", " + w
+            else:
+                result = "No Typos here!"
+                
+            return "The following are typos in the document: " + result
+        else:
+            return redirect(url_for('spellcheck'))
+        
     return render_template('spellcheck.html')
 
 
