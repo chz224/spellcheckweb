@@ -1,5 +1,14 @@
 <html>
 
+<style>
+	.typos{
+		background-color: tomato;
+		color: white;
+		padding: 10px
+
+	}
+</style>
+
 <head>
     <meta charset="UTF-8">
     <title>Spell Check</title>
@@ -9,7 +18,7 @@
         body {
             background-color: #303641;
         }
-    </style>
+    </style>	
 </head>
 
 <body>
@@ -24,10 +33,18 @@
                 <input type="submit" value="Check Spelling" />
             </div>
         </form>
-
+		
+			<h2>Your Typos: </h2>
+		
+			<div id="container-typos">
+				<h2 class="typos">
+					<p>{{webresult}}</p>
+				</h2>
+			</div>
 
 
     </div>
+	
 </body>
 
 </html>

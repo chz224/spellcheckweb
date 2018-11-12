@@ -1,0 +1,33 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Spell Check</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            background-color: #303641;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container-spellcheck">
+        <form action="http://localhost:5000/spellcheck" method="POST" enctype = "multipart/form-data">
+
+            <div class="input">
+                <input id="wrongText" name = "wrongText" placeholder="Enter the file to spellcheck" type="file">
+            </div>
+
+            <div class="register">
+                <input type="submit" value="Check Spelling" />
+            </div>
+        </form>
+
+
+
+    </div>
+</body>
+
+</html>

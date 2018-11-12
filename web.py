@@ -24,7 +24,6 @@ import mysql.connector
 
 
 app = Flask(__name__)
-#app.secret_key = b'aaanwaf 3/1  3g]Anaa'
 
 
 mysql = MySQL()
@@ -67,24 +66,21 @@ def login():
 
             ##If the password is verified to the stored hash, "log in"
             if ((sha256_crypt.verify(password, row[0]))):
-                print("FOUND, LOG IN")
                 cursor.close()
                 return  redirect(url_for('spellcheck'))
                 
                 
             
             
-            print("NOT FOUND, GO BACK TO LOGIN")
             cursor.close()
-            return redirect(url_for('login'))
+            return  render_template('login.html', form=form, message="Invalid Username or Password")
 
             
             
         #In the case of some error, just redirect back to the login page for now
         except:
-            print("ERROR, GO BACK TO LOGIN")
             cursor.close()
-            return  redirect(url_for('login'))
+            return   render_template('login.html', form=form, message="Invalid Username or Password")
     
 
 
@@ -134,13 +130,13 @@ def register():
         #Or the username already exists in the database, go back to register
         except:
             cursor.close()
-            return  redirect(url_for('register'))
+            return render_template('register.html', form=form, message="The username is taken")
             
             
 
-    print("RENDERING REGISTER");
+    
     cursor.close()
-    return render_template('register.html', form=form)
+    return render_template('register.html', form=form, message="")
 
 
 @app.route("/spellcheck", methods=['GET','POST'])
@@ -171,18 +167,17 @@ def spellcheck():
              
 
             mispelled = spell.unknown(words)
-            print(mispelled)
             if (len(mispelled) > 0):
                 for w in mispelled:
                     result = result + ", " + w
             else:
                 result = "No Typos here!"
                 
-            return "The following are typos in the document: " + result
+            return render_template('spellcheck.html', webresult=result)
         else:
             return redirect(url_for('spellcheck'))
         
-    return render_template('spellcheck.html')
+    return render_template('spellcheck.html', webresult="None So Far!")
 
 
 
