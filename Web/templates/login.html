@@ -1,0 +1,49 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            background-color: #303641;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container-login">
+        <div id="title">
+               <i class="material-icons lock">lock</i> Login
+           </div>
+            <form action ="{{ url_for('login') }}" method="POST">
+				{{ form.csrf_token }}
+               <div class="input">
+                   <div class="input-addon">
+                       <i class="material-icons">face</i>
+                   </div>
+                   <input id="username" name="username" placeholder="Username" type="text">
+               </div>
+                <div class="clearfix"></div>
+                <div class="input">
+                   <div class="input-addon">
+                       <i class="material-icons">vpn_key</i>
+                   </div>
+                   <input id="password" name ="password" placeholder="Password" type="password">
+               </div>
+
+               <input type="submit" value="Log In" />
+			   
+			   <p>{{message}}</p>
+            </form>
+
+           <div class="register">
+               Don't have an account yet?
+               <a href="/register"><button id="register-link">Register here</button></a>
+           </div>
+    </div>
+
+</body>
+
+</html>
