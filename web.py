@@ -9,7 +9,7 @@ from flask_wtf import FlaskForm
 from flask_login import LoginManager, UserMixin, login_user, logout_user
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from werkzeug import secure_filename
-
+import logging
 
 #Okay, maybe import this instead for SQL stuff
 from flaskext.mysql import MySQL
@@ -23,7 +23,9 @@ import mysql.connector
 
 #Setup flask
 app = Flask(__name__)
-
+logger = logging.getLogger(__name__)
+file_handler = logging.FileHandler('ErrorLog.txt')
+logging.basicConfig(filename='ErrorLog.txt',level=logging.INFO)
 
 #login manager to help with sessions
 login = LoginManager(app)
@@ -35,10 +37,10 @@ mysql = MySQL()
 #Configuration stuff for the app
     #The account on the database is currently the root-like but not exactly root
     #test account
-app.config['MYSQL_DATABASE_USER'] = 'test'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'test'
+app.config['MYSQL_DATABASE_USER'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'toor'
 app.config['MYSQL_DATABASE_DB'] = 'users'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+#app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 
 app.config['SECRET_KEY'] = 'BolognaBoys'
 
@@ -90,7 +92,7 @@ def login():
     cursor = conn.cursor()
 
     form = LoginForm(request.form)
-
+    logger.info('Unknown user open the website')
 
     if(request.method=='POST'):
         username = form.username.data
@@ -100,7 +102,7 @@ def login():
         try:
             ##get the hashed password corresponding to the username entered
             cursor.execute('''SELECT * FROM userpass WHERE user = %s''', username)
-                
+            logger.info('User: "' + username + '" attempt to login')
                 
                 ##Check each item that matches (Probably just one now but just to be safe)
             storeduser = cursor.fetchone()
@@ -125,14 +127,15 @@ def login():
                     
 
                 app.logger.info('%s logged in successfully', username)
+                logger.info('User: "' + username + '" successfully login')
 
-                    
                 return  redirect(url_for('spellcheck'))
-                
+
                     
             else:    
                 cursor.close()
                 abort(401)
+                logger.info('User: "' + username + '" failed to login')
                 return  render_template('login.html', form=form, message="Invalid Username or Password")
 
             
@@ -140,6 +143,7 @@ def login():
         #In the case of some error, just redirect back to the login page for now
         except:
             cursor.close()
+            logger.info('Unknown Error Occour')
             return   render_template('login.html', form=form, message="Unknown Error: please try again")
     
 
@@ -177,18 +181,21 @@ def register():
         username = form.username.data
         password = form.password.data
         hashed = sha256_crypt.hash(password)
+        logger.info('New User: "' + username + '"')
         
         
         try:
             cursor.execute('''INSERT INTO userpass(user,pass) VALUES (%s,%s)''',(username,hashed))
             conn.commit()
             cursor.close()
+            logger.info('New User: "' + username + '" successfully registered')
             return redirect(url_for('login'))
 
         #If either this doesn't work
         #Or the username already exists in the database, go back to register
         except:
             cursor.close()
+            logger.info('New User: "' + username + '" failed to register')
             return render_template('register.html', form=form, message="The username is taken")
             
             
@@ -214,6 +221,7 @@ def spellcheck():
 
         if (file):
             filename = secure_filename(file.filename)
+            logger.info('User spell checked: "' + filename + '"')
 
 
 
@@ -244,7 +252,7 @@ def spellcheck():
 #Route for logouts
 @app.route("/logout")
 def logout():
-
+    logger.info('User log out')
     logout_user()
     session.clear()
     return redirect(url_for('login'))
