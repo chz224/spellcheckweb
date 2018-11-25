@@ -1,42 +1,4 @@
-INFO:werkzeug: * Restarting with stat
-WARNING:werkzeug: * Debugger is active!
-INFO:werkzeug: * Debugger PIN: 505-327-211
-INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-INFO:werkzeug:127.0.0.1 - - [15/Nov/2018 15:40:49] "GET / HTTP/1.1" 500 -
-INFO:werkzeug:127.0.0.1 - - [15/Nov/2018 15:40:49] "GET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [15/Nov/2018 15:40:49] "GET /?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [15/Nov/2018 15:40:49] "GET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [15/Nov/2018 15:40:49] "GET /?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [15/Nov/2018 15:40:49] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
-INFO:werkzeug: * Detected change in 'C:\\Users\\User\\Desktop\\Web\\web.py', reloading
-INFO:werkzeug: * Restarting with stat
-WARNING:werkzeug: * Debugger is active!
-INFO:werkzeug: * Debugger PIN: 505-327-211
-INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-INFO:__main__:User Log In
-INFO:werkzeug:127.0.0.1 - - [15/Nov/2018 15:42:18] "GET / HTTP/1.1" 200 -
-INFO:werkzeug: * Detected change in 'C:\\Users\\User\\Desktop\\Web\\web.py', reloading
-INFO:werkzeug: * Restarting with stat
-INFO:werkzeug: * Restarting with stat
-WARNING:werkzeug: * Debugger is active!
-INFO:werkzeug: * Debugger PIN: 505-327-211
-INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-INFO:__main__:Unknown user open the website
-INFO:werkzeug:127.0.0.1 - - [16/Nov/2018 17:29:45] "GET / HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [16/Nov/2018 17:29:45] "GET /static/style.css HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [16/Nov/2018 17:29:45] "GET /favicon.ico HTTP/1.1" 404 -
-INFO:werkzeug:127.0.0.1 - - [16/Nov/2018 17:29:47] "GET /register HTTP/1.1" 200 -
-INFO:__main__:New User: testUser
-INFO:__main__:New User: testUser failed to register
-INFO:werkzeug:127.0.0.1 - - [16/Nov/2018 17:29:55] "POST /register HTTP/1.1" 200 -
-INFO:__main__:Unknown user open the website
-INFO:werkzeug:127.0.0.1 - - [16/Nov/2018 17:29:58] "GET / HTTP/1.1" 200 -
-INFO:__main__:Unknown user open the website
-INFO:__main__:User: test attempt to login
-INFO:__main__:Unknown Error Occour
-INFO:werkzeug:127.0.0.1 - - [16/Nov/2018 17:30:05] "POST / HTTP/1.1" 200 -
-INFO:werkzeug: * Detected change in 'C:\\Users\\User\\Desktop\\Web\\web.py', reloading
-INFO:werkzeug: * Restarting with stat
-WARNING:werkzeug: * Debugger is active!
-INFO:werkzeug: * Debugger PIN: 505-327-211
-INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+Test Error Log
+Test Critical Log
+Test Error Log
+Test Error Log

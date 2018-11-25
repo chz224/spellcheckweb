@@ -1,0 +1,25 @@
+Test Error Log
+Test Critical Log
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 505-327-211
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:__main__:Unknown user open the website
+ERROR:__main__:Test Error Log
+INFO:__main__:User: "ETES" attempt to login
+INFO:__main__:Unknown Error Occour
+INFO:werkzeug:127.0.0.1 - - [25/Nov/2018 10:04:20] "POST / HTTP/1.1" 200 -
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 505-327-211
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug: * Detected change in 'C:\\Users\\User\\Desktop\\Web\\web.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 505-327-211
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug: * Detected change in 'C:\\Users\\User\\Desktop\\Web\\web.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 505-327-211
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)

@@ -16,7 +16,7 @@ from flaskext.mysql import MySQL
 
 from passlib.hash import sha256_crypt
 from spellchecker import SpellChecker
-
+from logging import ERROR
 
 #import mysql's connector to get that functionality
 import mysql.connector
@@ -24,8 +24,18 @@ import mysql.connector
 #Setup flask
 app = Flask(__name__)
 logger = logging.getLogger(__name__)
-file_handler = logging.FileHandler('ErrorLog.txt')
-logging.basicConfig(filename='ErrorLog.txt',level=logging.INFO)
+file_handler = logging.FileHandler('InfoLog.txt')
+logging.basicConfig(filename='InfoLog.txt',level=logging.INFO)
+file_handlerE = logging.FileHandler('ErrorLog.txt')
+file_handlerE.setLevel(ERROR)
+logger.addHandler(file_handlerE)
+
+
+
+
+
+
+
 
 #login manager to help with sessions
 login = LoginManager(app)
@@ -37,8 +47,8 @@ mysql = MySQL()
 #Configuration stuff for the app
     #The account on the database is currently the root-like but not exactly root
     #test account
-app.config['MYSQL_DATABASE_USER'] = 'test'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'test'
+app.config['MYSQL_DATABASE_USER'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'toor'
 app.config['MYSQL_DATABASE_DB'] = 'users'
 #app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 
@@ -96,7 +106,7 @@ def login():
 
     if(request.method=='POST'):
         username = form.username.data
-        
+
 
 
         try:
@@ -135,7 +145,7 @@ def login():
             else:    
                 cursor.close()
                 abort(401)
-                logger.info('User: "' + username + '" failed to login')
+                logger.error('User: "' + username + '" failed to login')
                 return  render_template('login.html', form=form, message="Invalid Username or Password")
 
             
@@ -143,7 +153,7 @@ def login():
         #In the case of some error, just redirect back to the login page for now
         except:
             cursor.close()
-            logger.info('Unknown Error Occour')
+            logger.error('Unknown Error Occour')
             return   render_template('login.html', form=form, message="Unknown Error: please try again")
     
 
@@ -195,7 +205,7 @@ def register():
         #Or the username already exists in the database, go back to register
         except:
             cursor.close()
-            logger.info('New User: "' + username + '" failed to register')
+            logger.error('New User: "' + username + '" failed to register')
             return render_template('register.html', form=form, message="The username is taken")
             
             
@@ -221,7 +231,7 @@ def spellcheck():
 
         if (file):
             filename = secure_filename(file.filename)
-            logger.info('User spell checked: "' + filename + '"')
+            logger.info('User spell checked: "' + filename + '" size: ' + len(file))
 
 
 
