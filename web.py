@@ -74,7 +74,7 @@ class User(UserMixin):
     def __init__(self, un, p, i):
         self.username = un;
         self.passhash = p;
-        self.id = i
+        self.id = int(i)
         self.active = True
 
     def is_active(self):
@@ -91,14 +91,19 @@ class User(UserMixin):
 
 #Set user_loader callback
 @login.user_loader
-def load_user(id):
+def load_user(uid):
+
     cursor = conn.cursor()
-    ##get whatever's associated with the user
-    cursor.execute('''SELECT * FROM userpass WHERE id = %s''', id)
-            
-            
+    ##get whatever's associated with the id
+    cursor.execute('''SELECT * FROM userpass WHERE id = %s''', [uid])
+
+                
+                
     ##Check each item that matches (Probably just one now but just to be safe)
     storeduser = cursor.fetchone()
+
+    
+    #Return a user object
     return User(storeduser[1], storeduser[2], storeduser[0])
 
 
@@ -129,14 +134,13 @@ def login():
 
 
                 #Make a new user object to log in for now?
+                #Username, hashed password, the id?
                 user = User(username, storeduser[2], storeduser[0])
 
                 login_user(user)
+                
                     
                 cursor.close()
-
-
-                    
 
                 #I don't know, just make it so session is of the username
                 session['name'] = username
@@ -224,7 +228,11 @@ def register():
 
 @app.route("/spellcheck", methods=['GET','POST'])
 def spellcheck():
-    if not session.get('logged_in'):
+
+    ##WHY WON'T THIS WORK DAMN IT
+    ##if not load_user(session['name']).is_authenticated:
+
+    if not (session.get('logged_in')) == True:
         return redirect(url_for('login'))
     
     if (request.method == 'POST'):
@@ -236,6 +244,7 @@ def spellcheck():
         except:
             file = None
 
+        #If file exists, go through spellcheck
         if (file):
 
             #No blank file names
@@ -247,15 +256,7 @@ def spellcheck():
 
 
 
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
-
-            #Report size of file as seen in storage to log
-            filesize = os.stat(os.path.join(app.config['UPLOAD_FOLDER'], filename)).st_size
-
             
-            logger.info('User spell checked: "' + filename + '" size: ' + str(filesize))
-
 
 
 
@@ -268,6 +269,7 @@ def spellcheck():
             
     
              
+            
 
             mispelled = spell.unknown(words)
             if (len(mispelled) > 0):
@@ -275,10 +277,20 @@ def spellcheck():
                     result = result + ", " + w
             else:
                 result = "No Typos here!"
+
                 
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+
+            #Report size of file as seen in storage to log
+            filesize = os.stat(os.path.join(app.config['UPLOAD_FOLDER'], filename)).st_size
+            logger.info('USER IS CHECKING: "' + filename + '" SIZE: ' + str(filesize) + ' AND FOUND ' + str(len(mispelled)) + ' ERRORS')
+            
             return render_template('spellcheck.html', webresult=result)
+
+        #Otherwise, go back to normal spellcheck
         else:
-            return render_template('spellcheck.html', webresult="No Typos here")
+            return render_template('spellcheck.html')
         
     return render_template('spellcheck.html', webresult="None So Far!")
 
