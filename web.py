@@ -47,8 +47,8 @@ mysql = MySQL()
 #Configuration stuff for the app
     #The account on the database is currently the root-like but not exactly root
     #test account
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'toor'
+app.config['MYSQL_DATABASE_USER'] = 'test'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'test'
 app.config['MYSQL_DATABASE_DB'] = 'users'
 #app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 
