@@ -1,4 +1,0 @@
-Test Error Log
-Test Critical Log
-Test Error Log
-Test Error Log

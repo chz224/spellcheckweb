@@ -10,6 +10,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from werkzeug import secure_filename
 import logging
+import os
 
 #Okay, maybe import this instead for SQL stuff
 from flaskext.mysql import MySQL
@@ -21,18 +22,23 @@ from logging import ERROR
 #import mysql's connector to get that functionality
 import mysql.connector
 
+#Specify upload folder for files
+UPLOAD_FOLDER = './checked_files/'
+
+
 #Setup flask
 app = Flask(__name__)
 logger = logging.getLogger(__name__)
+
+#Set up Info Handler
 file_handler = logging.FileHandler('InfoLog.txt')
 logging.basicConfig(filename='InfoLog.txt',level=logging.INFO)
+
+#Set up Error Handler
 file_handlerE = logging.FileHandler('ErrorLog.txt')
 file_handlerE.setLevel(ERROR)
+
 logger.addHandler(file_handlerE)
-
-
-
-
 
 
 
@@ -50,7 +56,8 @@ mysql = MySQL()
 app.config['MYSQL_DATABASE_USER'] = 'test'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'test'
 app.config['MYSQL_DATABASE_DB'] = 'users'
-#app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 app.config['SECRET_KEY'] = 'BolognaBoys'
 
@@ -121,7 +128,7 @@ def login():
             if (sha256_crypt.verify(form.password.data, storeduser[2])):
 
 
-                    #Make a new user object to log in for now?
+                #Make a new user object to log in for now?
                 user = User(username, storeduser[2], storeduser[0])
 
                 login_user(user)
@@ -131,7 +138,7 @@ def login():
 
                     
 
-                    #I don't know, just make it so session is of the username
+                #I don't know, just make it so session is of the username
                 session['name'] = username
                 session['logged_in'] = True
                     
@@ -230,8 +237,24 @@ def spellcheck():
             file = None
 
         if (file):
+
+            #No blank file names
+            if file.filename == '':
+                return redirect(url_for('spellcheck'))
+            
+            #Sanitize file name input
             filename = secure_filename(file.filename)
-            logger.info('User spell checked: "' + filename + '" size: ' + len(file))
+
+
+
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+
+            #Report size of file as seen in storage to log
+            filesize = os.stat(os.path.join(app.config['UPLOAD_FOLDER'], filename)).st_size
+
+            
+            logger.info('User spell checked: "' + filename + '" size: ' + str(filesize))
 
 
 

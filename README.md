@@ -3,11 +3,11 @@ Application Security Web for Spell Check
 
 Need to install
 
-    flask
-
-    python 3.7
-  
-    pyspellchecker ----- libary for spellcheck
+    install flask
+	install python 3.7
+	install flask-WTF
+	install passlib
+	install pyspellchecker
 
 Should install
 
